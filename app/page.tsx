@@ -1,54 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./globals.css";
+import bibleData from "./data/douay-rheims.json";
 
-const bible = [
-  {
-    book: "John",
-    chapter: 6,
-    verses: [
-      "After these things Jesus went over the sea of Galilee, which is that of Tiberias.",
-      "And a great multitude followed him, because they saw the miracles which he did on them that were diseased.",
-      "Jesus therefore went up into a mountain, and there he sat with his disciples.",
-      "Now the pasch, the festival day of the Jews, was near at hand.",
-      "When Jesus therefore had lifted up his eyes, and seen that a very great multitude cometh to him, he said to Philip: Whence shall we buy bread, that these may eat?",
-    ],
-  },
-  {
-    book: "John",
-    chapter: 7,
-    verses: [
-      "After these things Jesus walked in Galilee; for he would not walk in Judea, because the Jews sought to kill him.",
-      "Now the Jews' feast of tabernacles was at hand.",
-      "And his brethren said to him: Pass from hence, and go into Judea.",
-    ],
-  },
-];
+type BibleData = Record<string, Record<string, Record<string, string>>>;
+
+const data = bibleData as BibleData;
+
+const chapters = Object.entries(data).flatMap(([book, chapterObj]) =>
+  Object.entries(chapterObj).map(([chapter, versesObj]) => ({
+    book,
+    chapter: Number(chapter),
+    verses: Object.entries(versesObj).map(([verseNumber, text]) => ({
+      number: Number(verseNumber),
+      text: text.replaceAll("*", ""),
+    })),
+  }))
+);
 
 export default function Home() {
   const [chapterIndex, setChapterIndex] = useState(0);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [summary, setSummary] = useState("");
 
-  const chapter = bible[chapterIndex];
+  const chapter = chapters[chapterIndex];
 
   useEffect(() => {
     const savedIndex = localStorage.getItem("lastChapterIndex");
-    const savedSummary = localStorage.getItem("chapterSummary");
     const savedFavorites = localStorage.getItem("favorites");
 
     if (savedIndex) setChapterIndex(Number(savedIndex));
-    if (savedSummary) setSummary(savedSummary);
     if (savedFavorites) setFavorites(JSON.parse(savedFavorites));
   }, []);
 
   useEffect(() => {
     localStorage.setItem("lastChapterIndex", String(chapterIndex));
-  }, [chapterIndex]);
+    setSummary(localStorage.getItem(`summary-${chapter.book}-${chapter.chapter}`) || "");
+  }, [chapterIndex, chapter.book, chapter.chapter]);
 
-  function addFavorite(verse: string) {
-    const quote = `${chapter.book} ${chapter.chapter} — ${verse}`;
+  function addFavorite(verseNumber: number, verse: string) {
+    const quote = `${chapter.book} ${chapter.chapter}:${verseNumber} — ${verse}`;
+    if (favorites.includes(quote)) return;
+
     const updated = [...favorites, quote];
     setFavorites(updated);
     localStorage.setItem("favorites", JSON.stringify(updated));
@@ -56,7 +50,7 @@ export default function Home() {
 
   function saveSummary(value: string) {
     setSummary(value);
-    localStorage.setItem("chapterSummary", value);
+    localStorage.setItem(`summary-${chapter.book}-${chapter.chapter}`, value);
   }
 
   return (
@@ -84,7 +78,7 @@ export default function Home() {
 
           <button
             onClick={() =>
-              setChapterIndex(Math.min(bible.length - 1, chapterIndex + 1))
+              setChapterIndex(Math.min(chapters.length - 1, chapterIndex + 1))
             }
             className="rounded-full bg-yellow-100 px-4 py-2 text-sm font-bold text-purple-950"
           >
@@ -92,14 +86,17 @@ export default function Home() {
           </button>
         </div>
 
-<article className="max-h-[65vh] overflow-y-auto rounded-3xl bg-[#fff7df] p-6 text-[#28122f] shadow-xl">          {chapter.verses.map((verse, index) => (
+        <article className="max-h-[62vh] overflow-y-auto rounded-3xl bg-[#fff7df] p-6 text-[#28122f] shadow-xl">
+          {chapter.verses.map((verse) => (
             <p
-              key={index}
-              onClick={() => addFavorite(verse)}
+              key={verse.number}
+              onClick={() => addFavorite(verse.number, verse.text)}
               className="mb-5 cursor-pointer text-lg leading-8"
             >
-              <span className="mr-2 font-bold text-purple-900">{index + 1}</span>
-              {verse}
+              <span className="mr-2 font-bold text-purple-900">
+                {verse.number}
+              </span>
+              {verse.text}
             </p>
           ))}
         </article>
