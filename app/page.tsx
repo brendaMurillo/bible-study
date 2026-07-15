@@ -47,21 +47,21 @@ export default function Home() {
   );
 
   async function saveProgressForWidget() {
-    const preview = chapter.verses.slice(0, 5).map((verse) => verse.text);
+  const preview = chapter.verses.slice(0, 5).map((verse) => verse.text);
 
-    await fetch("/api/progress", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-  book: chapter.book,
-  chapter: chapter.chapter,
-  chapterIndex,
-  preview,
-}),
-    });
-  }
+  await fetch("/api/progress", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      book: chapter.book,
+      chapter: chapter.chapter,
+      chapterIndex,
+      preview,
+    }),
+  });
+}
 
   useEffect(() => {
     const savedIndex = localStorage.getItem("lastChapterIndex");
@@ -74,12 +74,13 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("lastChapterIndex", String(chapterIndex));
-    setSummary(
-      localStorage.getItem(`summary-${chapter.book}-${chapter.chapter}`) || ""
-    );
-    saveProgressForWidget();
-  }, [chapterIndex, chapter.book, chapter.chapter]);
+  localStorage.setItem("lastChapterIndex", String(chapterIndex));
+  setSummary(
+    localStorage.getItem(`summary-${chapter.book}-${chapter.chapter}`) || ""
+  );
+
+  saveProgressForWidget();
+}, [chapterIndex, chapter.book, chapter.chapter]);
 
   function goToChapter(index: number) {
     setChapterIndex(Math.max(0, Math.min(chapters.length - 1, index)));
