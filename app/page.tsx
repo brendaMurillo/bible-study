@@ -322,8 +322,6 @@ export default function Home() {
         )}
 
         <article
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
           className={`reader-card relative ${
             readingMode ? "reading-card" : "max-h-[62vh]"
           }`}
