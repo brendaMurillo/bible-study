@@ -313,8 +313,8 @@ export default function Home() {
 >
   <button
     onClick={() => setReadingMode(!readingMode)}
-    className="absolute right-4 top-4 z-10 rounded-full border border-[#d8b65a]/70 bg-black/35 px-3 py-1.5 text-xs font-bold text-[#fff3d4] backdrop-blur"
-  >
+    className="absolute right-4 top-4 z-10 rounded-full border border-[#b98b35]/50 bg-white/35 px-2.5 py-1 text-[11px] font-bold text-[#3b2415] shadow-md backdrop-blur"
+    >
     {readingMode ? "Exit Reading Mode" : "Reading Mode ⛶"}
   </button>
           {chapter.verses.map((verse) => {
