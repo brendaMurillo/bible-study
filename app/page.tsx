@@ -46,6 +46,22 @@ export default function Home() {
     [chapter.book]
   );
 
+  async function saveProgressForWidget() {
+    const preview = chapter.verses.slice(0, 5).map((verse) => verse.text);
+
+    await fetch("/api/progress", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        book: chapter.book,
+        chapter: chapter.chapter,
+        preview,
+      }),
+    });
+  }
+
   useEffect(() => {
     const savedIndex = localStorage.getItem("lastChapterIndex");
     const savedFavorites = localStorage.getItem("favorites");
@@ -61,6 +77,7 @@ export default function Home() {
     setSummary(
       localStorage.getItem(`summary-${chapter.book}-${chapter.chapter}`) || ""
     );
+    saveProgressForWidget();
   }, [chapterIndex, chapter.book, chapter.chapter]);
 
   function goToChapter(index: number) {
@@ -179,8 +196,6 @@ export default function Home() {
         readingMode ? "reading-mode" : ""
       }`}
     >
-      
-
       <section className="mx-auto max-w-3xl px-5 py-6">
         {!readingMode && (
           <>
@@ -264,7 +279,7 @@ export default function Home() {
                       }}
                       className="block w-full rounded-2xl bg-[#f4ead2] p-4 text-left text-[#28170d]"
                     >
-                      <p className="font-bold text-[#6d1e24]">
+                      <p className="font-bold text-[#2d5b46]">
                         {result.book} {result.chapter}:{result.verse}
                       </p>
                       <p className="mt-1 text-sm leading-6">{result.text}</p>
@@ -305,54 +320,55 @@ export default function Home() {
         )}
 
         <article
-  onTouchStart={handleTouchStart}
-  onTouchEnd={handleTouchEnd}
-  className={`reader-card relative ${
-    readingMode ? "reading-card" : "max-h-[62vh]"
-  }`}
->
-  <button
-    onClick={() => setReadingMode(!readingMode)}
-    className="absolute right-4 top-4 z-10 rounded-full border border-[#b98b35]/50 bg-white/35 px-2.5 py-1 text-[11px] font-bold text-[#3b2415] shadow-md backdrop-blur"
-    >
-    {readingMode ? "Exit Reading Mode" : "Reading Mode ⛶"}
-  </button>
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          className={`reader-card relative ${
+            readingMode ? "reading-card" : "max-h-[62vh]"
+          }`}
+        >
+          <button
+            onClick={() => setReadingMode(!readingMode)}
+            className="absolute right-4 top-4 z-10 rounded-full border border-[#d8b65a]/70 bg-black/35 px-2.5 py-1 text-[11px] font-bold text-[#fff3d4] backdrop-blur"
+          >
+            {readingMode ? "Exit Reading Mode" : "Reading Mode ⛶"}
+          </button>
+
           {chapter.verses.map((verse) => {
             const id = verseId(verse.number);
             const isHighlighted = highlights.includes(id);
 
             return (
-<div
-  key={verse.number}
-  className={`verse-block ${isHighlighted ? "highlighted" : ""}`}
->
-  <div className="flex gap-3">
-    {!readingMode && (
-      <div className="flex min-w-8 flex-col items-center gap-2 pt-1">
-        <button
-          onClick={() => addFavorite(verse.number, verse.text)}
-          title="Favorite"
-          className="verse-action"
-        >
-          ♡
-        </button>
+              <div
+                key={verse.number}
+                className={`verse-block ${isHighlighted ? "highlighted" : ""}`}
+              >
+                <div className="flex gap-3">
+                  {!readingMode && (
+                    <div className="flex min-w-8 flex-col items-center gap-2 pt-1">
+                      <button
+                        onClick={() => addFavorite(verse.number, verse.text)}
+                        title="Favorite"
+                        className="verse-action"
+                      >
+                        ♡
+                      </button>
 
-        <button
-          onClick={() => toggleHighlight(verse.number)}
-          title="Highlight"
-          className="verse-action gold"
-        >
-          ✦
-        </button>
-      </div>
-    )}
+                      <button
+                        onClick={() => toggleHighlight(verse.number)}
+                        title="Highlight"
+                        className="verse-action gold"
+                      >
+                        ✦
+                      </button>
+                    </div>
+                  )}
 
-    <p className="text-xl leading-9">
-      <span className="verse-number">{verse.number}</span>
-      {verse.text}
-    </p>
-  </div>
-</div>
+                  <p className="text-xl leading-9">
+                    <span className="verse-number">{verse.number}</span>
+                    {verse.text}
+                  </p>
+                </div>
+              </div>
             );
           })}
         </article>
@@ -390,7 +406,7 @@ export default function Home() {
                         onClick={() => goToChapter(fav.chapterIndex)}
                         className="block text-left"
                       >
-                        <p className="font-bold text-[#6d1e24]">
+                        <p className="font-bold text-[#2d5b46]">
                           {fav.book} {fav.chapter}:{fav.verse}
                         </p>
                         <p className="mt-1 text-sm leading-6">{fav.text}</p>
@@ -398,7 +414,7 @@ export default function Home() {
 
                       <button
                         onClick={() => removeFavorite(fav.id)}
-                        className="mt-3 rounded-full bg-[#6d1e24] px-3 py-1 text-xs font-bold text-[#fff3d4]"
+                        className="mt-3 rounded-full bg-[#2d5b46] px-3 py-1 text-xs font-bold text-[#fff3d4]"
                       >
                         Remove
                       </button>
