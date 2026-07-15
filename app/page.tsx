@@ -28,15 +28,14 @@ type Favorite = {
   chapterIndex: number;
 };
 
-type SearchResult = Favorite;
-
 export default function Home() {
   const [chapterIndex, setChapterIndex] = useState(0);
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [summary, setSummary] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchResults, setSearchResults] = useState<Favorite[]>([]);
   const [highlights, setHighlights] = useState<string[]>([]);
+  const [readingMode, setReadingMode] = useState(false);
 
   const touchStartX = useRef<number | null>(null);
   const chapter = chapters[chapterIndex];
@@ -87,7 +86,6 @@ export default function Home() {
 
   function addFavorite(verseNumber: number, text: string) {
     const id = verseId(verseNumber);
-
     if (favorites.some((fav) => fav.id === id)) return;
 
     const updated = [
@@ -176,101 +174,149 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-[#160b1f] text-[#fff7df]">
+    <main
+      className={`relative min-h-screen cathedral-bg text-[#f8ead0] ${
+        readingMode ? "reading-mode" : ""
+      }`}
+    >
+      
+
       <section className="mx-auto max-w-3xl px-5 py-6">
-        <div className="stained-card mb-6 rounded-3xl p-5 shadow-2xl">
-          <p className="text-sm uppercase tracking-[0.3em] text-yellow-200">
-            Catholic Bible Reader
-          </p>
+        {!readingMode && (
+          <>
+            <div className="stained-card mb-6 rounded-[2rem] p-6 shadow-2xl">
+              <p className="tracking-title text-sm uppercase text-[#e7c96a]">
+                Catholic Bible Reader
+              </p>
 
-          <h1 className="mt-3 text-4xl font-bold">
-            {chapter.book} {chapter.chapter}
-          </h1>
+              <h1 className="title-font mt-4 text-5xl font-bold text-[#fff3d4]">
+                {chapter.book} {chapter.chapter}
+              </h1>
 
-          <p className="mt-2 text-sm text-yellow-100">
-            Continue where you left off.
-          </p>
-        </div>
-
-        <section className="mb-5 grid grid-cols-2 gap-3">
-          <select
-            value={chapter.book}
-            onChange={(e) => selectBook(e.target.value)}
-            className="rounded-2xl bg-[#fff7df] p-3 font-bold text-[#28122f]"
-          >
-            {books.map((book) => (
-              <option key={book} value={book}>
-                {book}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={chapter.chapter}
-            onChange={(e) => selectChapter(Number(e.target.value))}
-            className="rounded-2xl bg-[#fff7df] p-3 font-bold text-[#28122f]"
-          >
-            {chaptersForBook.map((item) => (
-              <option key={item.chapter} value={item.chapter}>
-                Chapter {item.chapter}
-              </option>
-            ))}
-          </select>
-        </section>
-
-        <div className="mb-5 flex justify-between gap-3">
-          <button
-            onClick={() => goToChapter(chapterIndex - 1)}
-            className="rounded-full bg-yellow-100 px-4 py-2 text-sm font-bold text-purple-950"
-          >
-            Previous
-          </button>
-
-          <button
-            onClick={() => goToChapter(chapterIndex + 1)}
-            className="rounded-full bg-yellow-100 px-4 py-2 text-sm font-bold text-purple-950"
-          >
-            Next Chapter
-          </button>
-        </div>
-
-        <section className="mb-5 rounded-3xl bg-[#2a1238] p-5">
-          <h2 className="mb-3 text-xl font-bold">Find a Verse</h2>
-
-          <input
-            value={searchQuery}
-            onChange={(e) => searchBible(e.target.value)}
-            placeholder="Search, like: love is patient"
-            className="w-full rounded-2xl p-4 text-[#28122f]"
-          />
-
-          {searchResults.length > 0 && (
-            <div className="mt-4 space-y-3">
-              {searchResults.map((result) => (
-                <button
-                  key={result.id}
-                  onClick={() => {
-                    goToChapter(result.chapterIndex);
-                    setSearchResults([]);
-                    setSearchQuery("");
-                  }}
-                  className="block w-full rounded-2xl bg-[#fff7df] p-4 text-left text-[#28122f]"
-                >
-                  <p className="font-bold text-purple-900">
-                    {result.book} {result.chapter}:{result.verse}
-                  </p>
-                  <p className="mt-1 text-sm leading-6">{result.text}</p>
-                </button>
-              ))}
+              <p className="mt-2 text-sm text-[#f4ddb2]">
+                Peace be with you. Continue where you left off.
+              </p>
             </div>
-          )}
-        </section>
+
+            <section className="mb-5 grid grid-cols-2 gap-3">
+              <select
+                value={chapter.book}
+                onChange={(e) => selectBook(e.target.value)}
+                className="church-select"
+              >
+                {books.map((book) => (
+                  <option key={book} value={book}>
+                    {book}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={chapter.chapter}
+                onChange={(e) => selectChapter(Number(e.target.value))}
+                className="church-select"
+              >
+                {chaptersForBook.map((item) => (
+                  <option key={item.chapter} value={item.chapter}>
+                    Chapter {item.chapter}
+                  </option>
+                ))}
+              </select>
+            </section>
+
+            <div className="mb-5 flex justify-between gap-3">
+              <button
+                onClick={() => goToChapter(chapterIndex - 1)}
+                className="gold-button"
+              >
+                Previous
+              </button>
+
+              <button
+                onClick={() => goToChapter(chapterIndex + 1)}
+                className="gold-button"
+              >
+                Next Chapter
+              </button>
+            </div>
+
+            <section className="mb-5 rounded-[2rem] border border-[#8c6a2f]/50 bg-[#1c130d]/90 p-5 shadow-xl">
+              <h2 className="title-font mb-3 text-2xl font-bold text-[#f4ddb2]">
+                Find Scripture
+              </h2>
+
+              <input
+                value={searchQuery}
+                onChange={(e) => searchBible(e.target.value)}
+                placeholder='Describe or search, like: "love is patient"'
+                className="w-full rounded-2xl border border-[#c9a64a]/40 bg-[#f4ead2] p-4 text-[#28170d] outline-none"
+              />
+
+              {searchResults.length > 0 && (
+                <div className="mt-4 space-y-3">
+                  {searchResults.map((result) => (
+                    <button
+                      key={result.id}
+                      onClick={() => {
+                        goToChapter(result.chapterIndex);
+                        setSearchResults([]);
+                        setSearchQuery("");
+                      }}
+                      className="block w-full rounded-2xl bg-[#f4ead2] p-4 text-left text-[#28170d]"
+                    >
+                      <p className="font-bold text-[#6d1e24]">
+                        {result.book} {result.chapter}:{result.verse}
+                      </p>
+                      <p className="mt-1 text-sm leading-6">{result.text}</p>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        )}
+
+        {readingMode && (
+          <div className="mb-5 text-center">
+            <p className="tracking-title text-xs uppercase text-[#d8b65a]">
+              Catholic Bible Reader
+            </p>
+
+            <h1 className="title-font text-5xl text-[#fff3d4]">
+              {chapter.book} {chapter.chapter}
+            </h1>
+
+            <div className="mx-auto mt-5 flex max-w-md justify-between gap-3">
+              <button
+                onClick={() => goToChapter(chapterIndex - 1)}
+                className="gold-button"
+              >
+                Previous
+              </button>
+
+              <button
+                onClick={() => goToChapter(chapterIndex + 1)}
+                className="gold-button"
+              >
+                Next Chapter
+              </button>
+            </div>
+          </div>
+        )}
 
         <article
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          className="max-h-[62vh] overflow-y-auto rounded-3xl bg-[#fff7df] p-6 text-[#28122f] shadow-xl"
-        >
+  onTouchStart={handleTouchStart}
+  onTouchEnd={handleTouchEnd}
+  className={`reader-card relative ${
+    readingMode ? "reading-card" : "max-h-[62vh]"
+  }`}
+>
+  <button
+    onClick={() => setReadingMode(!readingMode)}
+    className="absolute right-4 top-4 z-10 rounded-full border border-[#d8b65a]/70 bg-black/35 px-3 py-1.5 text-xs font-bold text-[#fff3d4] backdrop-blur"
+  >
+    {readingMode ? "Exit Reading Mode" : "Reading Mode ⛶"}
+  </button>
           {chapter.verses.map((verse) => {
             const id = verseId(verse.number);
             const isHighlighted = highlights.includes(id);
@@ -278,81 +324,87 @@ export default function Home() {
             return (
               <div
                 key={verse.number}
-                className={`mb-5 rounded-2xl p-3 ${
-                  isHighlighted ? "bg-yellow-200" : ""
-                }`}
+                className={`verse-block ${isHighlighted ? "highlighted" : ""}`}
               >
-                <p className="text-lg leading-8">
-                  <span className="mr-2 font-bold text-purple-900">
-                    {verse.number}
-                  </span>
+                <p className="text-xl leading-9">
+                  <span className="verse-number">{verse.number}</span>
                   {verse.text}
                 </p>
 
-                <div className="mt-2 flex gap-2">
-                  <button
-                    onClick={() => addFavorite(verse.number, verse.text)}
-                    className="rounded-full bg-[#2a1238] px-3 py-1 text-xs font-bold text-yellow-100"
-                  >
-                    Favorite
-                  </button>
+                {!readingMode && (
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      onClick={() => addFavorite(verse.number, verse.text)}
+                      className="icon-button"
+                    >
+                      ♡ Favorite
+                    </button>
 
-                  <button
-                    onClick={() => toggleHighlight(verse.number)}
-                    className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-bold text-purple-950"
-                  >
-                    {isHighlighted ? "Remove Highlight" : "Highlight"}
-                  </button>
-                </div>
+                    <button
+                      onClick={() => toggleHighlight(verse.number)}
+                      className="icon-button light"
+                    >
+                      {isHighlighted ? "Remove Highlight" : "Highlight"}
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}
         </article>
 
-        <section className="mt-6 rounded-3xl bg-[#2a1238] p-5">
-          <h2 className="mb-3 text-xl font-bold">Chapter Summary / Notes</h2>
+        {!readingMode && (
+          <>
+            <section className="mt-6 rounded-[2rem] border border-[#8c6a2f]/50 bg-[#1c130d]/90 p-5">
+              <h2 className="title-font mb-3 text-2xl font-bold">
+                Reflection / Notes
+              </h2>
 
-          <textarea
-            value={summary}
-            onChange={(e) => saveSummary(e.target.value)}
-            placeholder="Write your summary or reflection here..."
-            className="min-h-32 w-full rounded-2xl p-4 text-[#28122f]"
-          />
-        </section>
+              <textarea
+                value={summary}
+                onChange={(e) => saveSummary(e.target.value)}
+                placeholder="Write your summary, prayer, or reflection here..."
+                className="min-h-32 w-full rounded-2xl border border-[#c9a64a]/40 bg-[#f4ead2] p-4 text-[#28170d] outline-none"
+              />
+            </section>
 
-        <section className="mt-6 rounded-3xl bg-[#2a1238] p-5">
-          <h2 className="mb-3 text-xl font-bold">Favorite Quotes</h2>
+            <section className="mt-6 rounded-[2rem] border border-[#8c6a2f]/50 bg-[#1c130d]/90 p-5">
+              <h2 className="title-font mb-3 text-2xl font-bold">
+                Favorite Quotes
+              </h2>
 
-          {favorites.length === 0 ? (
-            <p className="text-yellow-100">Save verses here.</p>
-          ) : (
-            <div className="space-y-3">
-              {favorites.map((fav, index) => (
-                <div
-                  key={`${fav.id}-${index}`}
-                  className="rounded-2xl bg-[#fff7df] p-4 text-[#28122f]"
-                >
-                  <button
-                    onClick={() => goToChapter(fav.chapterIndex)}
-                    className="block text-left"
-                  >
-                    <p className="font-bold text-purple-900">
-                      {fav.book} {fav.chapter}:{fav.verse}
-                    </p>
-                    <p className="mt-1 text-sm leading-6">{fav.text}</p>
-                  </button>
+              {favorites.length === 0 ? (
+                <p className="text-[#f4ddb2]">Save verses with ♡.</p>
+              ) : (
+                <div className="space-y-3">
+                  {favorites.map((fav, index) => (
+                    <div
+                      key={`${fav.id}-${index}`}
+                      className="rounded-2xl bg-[#f4ead2] p-4 text-[#28170d]"
+                    >
+                      <button
+                        onClick={() => goToChapter(fav.chapterIndex)}
+                        className="block text-left"
+                      >
+                        <p className="font-bold text-[#6d1e24]">
+                          {fav.book} {fav.chapter}:{fav.verse}
+                        </p>
+                        <p className="mt-1 text-sm leading-6">{fav.text}</p>
+                      </button>
 
-                  <button
-                    onClick={() => removeFavorite(fav.id)}
-                    className="mt-3 rounded-full bg-[#2a1238] px-3 py-1 text-xs font-bold text-yellow-100"
-                  >
-                    Remove Favorite
-                  </button>
+                      <button
+                        onClick={() => removeFavorite(fav.id)}
+                        className="mt-3 rounded-full bg-[#6d1e24] px-3 py-1 text-xs font-bold text-[#fff3d4]"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
+              )}
+            </section>
+          </>
+        )}
       </section>
     </main>
   );
