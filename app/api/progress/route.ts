@@ -1,6 +1,9 @@
+import { kv } from "@vercel/kv";
 import { NextResponse } from "next/server";
 
-let progress = {
+const KEY = "brenda-bible-progress";
+
+const fallback = {
   book: "Genesis",
   chapter: 1,
   preview: [
@@ -13,17 +16,22 @@ let progress = {
 };
 
 export async function GET() {
-  return NextResponse.json(progress);
+  const progress = await kv.get(KEY);
+  return NextResponse.json(progress || fallback);
 }
 
 export async function POST(request: Request) {
   const body = await request.json();
 
-  progress = {
+  const progress = {
     book: body.book,
     chapter: body.chapter,
+    chapterIndex: body.chapterIndex,
     preview: body.preview,
+    updatedAt: new Date().toISOString(),
   };
+
+  await kv.set(KEY, progress);
 
   return NextResponse.json({ ok: true });
 }

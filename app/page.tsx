@@ -55,10 +55,11 @@ export default function Home() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        book: chapter.book,
-        chapter: chapter.chapter,
-        preview,
-      }),
+  book: chapter.book,
+  chapter: chapter.chapter,
+  chapterIndex,
+  preview,
+}),
     });
   }
 
