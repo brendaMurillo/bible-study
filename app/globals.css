@@ -118,3 +118,22 @@ body {
 .reading-mode .cathedral-bg {
   background: #080604;
 }
+
+.verse-action {
+  display: flex;
+  height: 1.8rem;
+  width: 1.8rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: #6d1e24;
+  color: #fff3d4;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.verse-action.gold {
+  background: #e5c76a;
+  color: #24150d;
+}

@@ -322,33 +322,37 @@ export default function Home() {
             const isHighlighted = highlights.includes(id);
 
             return (
-              <div
-                key={verse.number}
-                className={`verse-block ${isHighlighted ? "highlighted" : ""}`}
-              >
-                <p className="text-xl leading-9">
-                  <span className="verse-number">{verse.number}</span>
-                  {verse.text}
-                </p>
+<div
+  key={verse.number}
+  className={`verse-block ${isHighlighted ? "highlighted" : ""}`}
+>
+  <div className="flex gap-3">
+    {!readingMode && (
+      <div className="flex min-w-8 flex-col items-center gap-2 pt-1">
+        <button
+          onClick={() => addFavorite(verse.number, verse.text)}
+          title="Favorite"
+          className="verse-action"
+        >
+          ♡
+        </button>
 
-                {!readingMode && (
-                  <div className="mt-2 flex gap-2">
-                    <button
-                      onClick={() => addFavorite(verse.number, verse.text)}
-                      className="icon-button"
-                    >
-                      ♡ Favorite
-                    </button>
+        <button
+          onClick={() => toggleHighlight(verse.number)}
+          title="Highlight"
+          className="verse-action gold"
+        >
+          ✦
+        </button>
+      </div>
+    )}
 
-                    <button
-                      onClick={() => toggleHighlight(verse.number)}
-                      className="icon-button light"
-                    >
-                      {isHighlighted ? "Remove Highlight" : "Highlight"}
-                    </button>
-                  </div>
-                )}
-              </div>
+    <p className="text-xl leading-9">
+      <span className="verse-number">{verse.number}</span>
+      {verse.text}
+    </p>
+  </div>
+</div>
             );
           })}
         </article>
