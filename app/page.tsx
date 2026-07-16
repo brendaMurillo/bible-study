@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import "./globals.css";
+import { useEffect, useMemo, useState } from "react";
 import bibleData from "./data/douay-rheims.json";
 
 type BibleData = Record<string, Record<string, Record<string, string>>>;
@@ -37,7 +36,6 @@ export default function Home() {
   const [highlights, setHighlights] = useState<string[]>([]);
   const [readingMode, setReadingMode] = useState(false);
 
-  const touchStartX = useRef<number | null>(null);
   const chapter = chapters[chapterIndex];
 
   const books = useMemo(() => Object.keys(data), []);
@@ -47,25 +45,25 @@ export default function Home() {
   );
 
   async function saveProgressForWidget() {
-  const preview = chapter.verses.slice(0, 5).map((verse) => verse.text);
+    const preview = chapter.verses.slice(0, 5).map((verse) => verse.text);
 
-  const params = new URLSearchParams(window.location.search);
-  const deviceId = params.get("deviceId") || "default";
+    const params = new URLSearchParams(window.location.search);
+    const deviceId = params.get("deviceId") || "default";
 
-  await fetch("/api/progress", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      deviceId,
-      book: chapter.book,
-      chapter: chapter.chapter,
-      chapterIndex,
-      preview,
-    }),
-  });
-}
+    await fetch("/api/progress", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        deviceId,
+        book: chapter.book,
+        chapter: chapter.chapter,
+        chapterIndex,
+        preview,
+      }),
+    });
+  }
 
   useEffect(() => {
     const savedIndex = localStorage.getItem("lastChapterIndex");
@@ -78,13 +76,13 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-  localStorage.setItem("lastChapterIndex", String(chapterIndex));
-  setSummary(
-    localStorage.getItem(`summary-${chapter.book}-${chapter.chapter}`) || ""
-  );
+    localStorage.setItem("lastChapterIndex", String(chapterIndex));
+    setSummary(
+      localStorage.getItem(`summary-${chapter.book}-${chapter.chapter}`) || ""
+    );
 
-  saveProgressForWidget();
-}, [chapterIndex, chapter.book, chapter.chapter]);
+    saveProgressForWidget();
+  }, [chapterIndex, chapter.book, chapter.chapter]);
 
   function goToChapter(index: number) {
     setChapterIndex(Math.max(0, Math.min(chapters.length - 1, index)));
@@ -178,22 +176,6 @@ export default function Home() {
     );
 
     setSearchResults(results.slice(0, 10));
-  }
-
-  function handleTouchStart(e: React.TouchEvent) {
-    touchStartX.current = e.touches[0].clientX;
-  }
-
-  function handleTouchEnd(e: React.TouchEvent) {
-    if (touchStartX.current === null) return;
-
-    const touchEndX = e.changedTouches[0].clientX;
-    const difference = touchStartX.current - touchEndX;
-
-    if (difference > 70) goToChapter(chapterIndex + 1);
-    if (difference < -70) goToChapter(chapterIndex - 1);
-
-    touchStartX.current = null;
   }
 
   return (
@@ -340,32 +322,35 @@ export default function Home() {
           {chapter.verses.map((verse) => {
             const id = verseId(verse.number);
             const isHighlighted = highlights.includes(id);
+            const isFavorite = favorites.some((fav) => fav.id === id);
 
             return (
               <div
-                key={verse.number}
-                className={`verse-block ${isHighlighted ? "highlighted" : ""}`}
-              >
+  key={verse.number}
+  className={`verse-block ${isHighlighted ? "highlighted" : ""}`}
+>
                 <div className="flex gap-3">
-                  {!readingMode && (
-                    <div className="flex min-w-8 flex-col items-center gap-2 pt-1">
-                      <button
-                        onClick={() => addFavorite(verse.number, verse.text)}
-                        title="Favorite"
-                        className="verse-action"
-                      >
-                        ♡
-                      </button>
+                  <div className="flex min-w-8 flex-col items-center gap-2 pt-1">
+                    <button
+                      onClick={() => addFavorite(verse.number, verse.text)}
+                      title="Favorite"
+                      className={`verse-action ${
+                        isFavorite ? "opacity-100" : "opacity-70"
+                      }`}
+                    >
+                      ♡
+                    </button>
 
-                      <button
-                        onClick={() => toggleHighlight(verse.number)}
-                        title="Highlight"
-                        className="verse-action gold"
-                      >
-                        ✦
-                      </button>
-                    </div>
-                  )}
+                    <button
+                      onClick={() => toggleHighlight(verse.number)}
+                      title="Highlight"
+                      className={`verse-action gold ${
+                        isHighlighted ? "opacity-100" : "opacity-70"
+                      }`}
+                    >
+                      ✦
+                    </button>
+                  </div>
 
                   <p className="text-xl leading-9">
                     <span className="verse-number">{verse.number}</span>
