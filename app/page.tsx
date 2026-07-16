@@ -189,7 +189,7 @@ export default function Home() {
           <>
             <div className="stained-card mb-6 rounded-[2rem] p-6 shadow-2xl">
               <p className="tracking-title text-sm uppercase text-[#e7c96a]">
-                Catholic Bible Reader
+                Bible Reader
               </p>
 
               <h1 className="title-font mt-4 text-5xl font-bold text-[#fff3d4]">
@@ -197,7 +197,7 @@ export default function Home() {
               </h1>
 
               <p className="mt-2 text-sm text-[#f4ddb2]">
-                Peace be with you. Continue where you left off.
+                 
               </p>
             </div>
 
@@ -282,7 +282,7 @@ export default function Home() {
         {readingMode && (
           <div className="mb-5 text-center">
             <p className="tracking-title text-xs uppercase text-[#d8b65a]">
-              Catholic Bible Reader
+              Bible Reader
             </p>
 
             <h1 className="title-font text-5xl text-[#fff3d4]">
