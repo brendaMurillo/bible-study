@@ -1,6 +1,6 @@
 {
   "name": "Catholic Bible Reader",
-  "short_name": "Bible",
+  "short_name": "Bible Study",
   "start_url": "/continue",
   "display": "standalone",
   "background_color": "#0f0c09",
