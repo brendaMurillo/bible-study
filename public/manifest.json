@@ -1,0 +1,15 @@
+{
+  "name": "Catholic Bible Reader",
+  "short_name": "Bible",
+  "start_url": "/continue",
+  "display": "standalone",
+  "background_color": "#0f0c09",
+  "theme_color": "#0f0c09",
+  "icons": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

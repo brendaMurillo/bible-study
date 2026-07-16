@@ -1,8 +1,6 @@
 import { kv } from "@vercel/kv";
 import { NextResponse } from "next/server";
 
-const KEY = "brenda-bible-progress";
-
 const fallback = {
   book: "Genesis",
   chapter: 1,
@@ -15,8 +13,15 @@ const fallback = {
   ],
 };
 
-export async function GET() {
-  const progress = await kv.get(KEY);
+function getKey(deviceId: string | null) {
+  return `bible-progress-${deviceId || "default"}`;
+}
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const deviceId = searchParams.get("deviceId");
+
+  const progress = await kv.get(getKey(deviceId));
   return NextResponse.json(progress || fallback);
 }
 
@@ -31,7 +36,7 @@ export async function POST(request: Request) {
     updatedAt: new Date().toISOString(),
   };
 
-  await kv.set(KEY, progress);
+  await kv.set(getKey(body.deviceId || "default"), progress);
 
   return NextResponse.json({ ok: true });
 }

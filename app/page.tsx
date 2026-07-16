@@ -49,12 +49,16 @@ export default function Home() {
   async function saveProgressForWidget() {
   const preview = chapter.verses.slice(0, 5).map((verse) => verse.text);
 
+  const params = new URLSearchParams(window.location.search);
+  const deviceId = params.get("deviceId") || "default";
+
   await fetch("/api/progress", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
+      deviceId,
       book: chapter.book,
       chapter: chapter.chapter,
       chapterIndex,
