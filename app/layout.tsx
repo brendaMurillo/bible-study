@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 
 export const metadata = {
-  title: "Catholic Bible Reader",
+  title: "Bible Reader",
   manifest: "/manifest.json",
 };
 
